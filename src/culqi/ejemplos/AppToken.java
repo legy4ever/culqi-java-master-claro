@@ -42,7 +42,7 @@ public class AppToken {
 		token.setNumero("4111111111111111");
 		token.setCvv("123");
 		token.setM_exp("9");
-		token.setA_exp("2020");
+		token.setA_exp("2019");
 		token.setGuardar(true);
 		
 		return token;

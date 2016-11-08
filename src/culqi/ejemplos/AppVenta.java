@@ -2,6 +2,7 @@ package culqi.ejemplos;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -14,7 +15,7 @@ import com.google.gson.Gson;
 
 public class AppVenta {
 
-	private static String TOKEN = "e4T8awueorasFvcRvwAyp4JxsuXPeQge";
+	private static String TOKEN = "cwzhlqgteSrLBqYaMibfUxWbOxiNdiUT";
 	private static String CODIGO_COMERCIO = "u3XvS7xeC8eU";
 	private static String LLAVE_SECRETA = "FntKssmSKBhJKTTPSYYoN8MCnwE57KjRnhX0vNUN7DI=";
 	private static String URLModPago = "https://integ-pago.culqi.com/api/v1/cargos";
@@ -73,12 +74,13 @@ public class AppVenta {
 	private static String excutePost(String json){
 		URL url;
 		HttpURLConnection connection = null;
-		try{
-			url = new URL(URLModPago);
+		try{			
+			url = new URL(URLModPago);			
+			
 			connection = (HttpURLConnection)url.openConnection();
-			connection.setRequestMethod("POST");
-			connection.setRequestProperty("Content-Type", "application/json");
+			connection.setRequestProperty("Content-Type", "application/json; charset=utf-8");
 			connection.setRequestProperty("Authorization", "Bearer " + LLAVE_SECRETA);
+			connection.setRequestMethod("POST");
 			connection.setDoInput(true);
 			connection.setDoOutput(true);
 			
@@ -87,7 +89,14 @@ public class AppVenta {
 			wr.flush();
 			wr.close();
 			
-			InputStream is = connection.getInputStream();
+			InputStream is;
+			
+			if (connection.getResponseCode() == 200) {
+				is = connection.getInputStream();
+			} else {
+				is = connection.getErrorStream();
+			}
+			
 			BufferedReader rd = new BufferedReader(new InputStreamReader(is));
 			
 			String line;
@@ -97,7 +106,10 @@ public class AppVenta {
 		        response.append('\r');
 		      }
 		    rd.close();
+		    System.out.println("Respuesta de culqi:");
 		    return response.toString();
+		} catch(IOException x){
+			return null;
 		} catch(Exception e){
 			e.printStackTrace();
 			return null;
